@@ -27,14 +27,19 @@ app.get('/api/count', async (req, res) => {
 });
 
 const server = app.listen(3000, () => {
-    console.log('Started server');
+    console.log('Started Express server');
 });
 
-process.on('SIGINT', async () => {
+const onExit = async () => {
     console.log('Received kill signal, shutting down gracefully...');
     server.close();
+    console.log('Stopped Express server');
     mongo.close();
+    console.log('Closed MongoDB connection')
     await stopDockerContainer(container);
-    console.log('Server stopped');
+    console.log('Backend stopped');
     process.exit(0);
-})
+};
+
+process.on('SIGINT', onExit);
+process.on('SIGTERM', onExit);

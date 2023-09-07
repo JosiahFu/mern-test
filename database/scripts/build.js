@@ -5,6 +5,7 @@ import path from 'path';
 const docker = new Docker();
 
 async function buildDockerImage() {
+    console.log('Building docker image...\n');
     try {
         await docker.buildImage(
             {
@@ -32,7 +33,7 @@ async function buildDockerImage() {
             }
         );
     } catch (err) {
-        console.error('Error:', err.message);
+        throw new Error('Error building Docker image:', err.message);
     }
 }
 

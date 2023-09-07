@@ -4,12 +4,6 @@ import 'dotenv/config';
 const docker = new Docker();
 
 async function startDockerContainer(containerName) {
-    if (!containerName) {
-        console.log(
-            'No container name provided. Starting an unnamed container...'
-        );
-    }
-
     try {
         // Check if the container with the given name exists
         const containers = await docker.listContainers({ all: true });
@@ -19,20 +13,19 @@ async function startDockerContainer(containerName) {
                 return containerInfo.Names.includes('/' + containerName);
             });
 
+        let container;
+
         if (existingContainer) {
             console.log(
                 `Container "${containerName}" already exists. Starting it...`
             );
-            const container = docker.getContainer(existingContainer.Id);
-            await container.start();
-            return container;
+            container = docker.getContainer(existingContainer.Id);
         } else {
-            console.log(
-                `Container "${
-                    containerName ?? 'unnamed-container'
-                }" does not exist. Creating and starting a new container...`
-            );
-            const container = await docker.createContainer({
+            if (containerName) {
+                console.log(`Container "${containerName}" does not exist.`);
+            }
+            console.log('Creating and starting a new container...');
+            container = await docker.createContainer({
                 Image: process.env.IMAGE_NAME, // You can specify a different image if needed
                 name: containerName, // Set Name to undefined for an unnamed container
                 HostConfig: {
@@ -41,11 +34,13 @@ async function startDockerContainer(containerName) {
                     },
                 },
             });
-            await container.start();
-            return container;
         }
+
+        await container.start();
+        console.log('Started container');
+        return container;
     } catch (err) {
-        console.error('Error:', err.message);
+        throw new Error('Error starting container:', err.message);
     }
 }
 
