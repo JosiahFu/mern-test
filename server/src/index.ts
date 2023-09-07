@@ -31,7 +31,7 @@ const server = app.listen(3000, () => {
 });
 
 const onExit = async () => {
-    console.log('Received kill signal, shutting down gracefully...');
+    console.log('\nReceived kill signal, shutting down gracefully...');
     server.close();
     console.log('Stopped Express server');
     mongo.close();

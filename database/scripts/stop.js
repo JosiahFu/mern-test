@@ -4,11 +4,7 @@ const docker = new Docker();
 
 async function stopDockerContainer(container) {
     console.log('Stopping container...');
-    try {
-        await container.stop();
-    } catch (err) {
-        throw new Error('Error stopping container:', err.message);
-    }
+    await container.stop();
     console.log('Stopped container');
 }
 

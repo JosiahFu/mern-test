@@ -6,35 +6,31 @@ const docker = new Docker();
 
 async function buildDockerImage() {
     console.log('Building docker image...\n');
-    try {
-        await docker.buildImage(
-            {
-                context: path.join(
-                    path.dirname(new URL(import.meta.url).pathname),
-                    '..'
-                ),
-                src: ['Dockerfile'],
-            },
-            { t: process.env.IMAGE_NAME },
-            (err, stream) => {
-                if (err) {
-                    console.error('Error building Docker image:', err);
-                    return;
-                }
-
-                // Print build process
-                stream.on('data', chunk => {
-                    process.stdout.write(JSON.parse(chunk)?.stream ?? '');
-                });
-
-                stream.on('end', () => {
-                    console.log('Docker image build complete.');
-                });
+    await docker.buildImage(
+        {
+            context: path.join(
+                path.dirname(new URL(import.meta.url).pathname),
+                '..'
+            ),
+            src: ['Dockerfile'],
+        },
+        { t: process.env.IMAGE_NAME },
+        (err, stream) => {
+            if (err) {
+                console.error('Error building Docker image:', err);
+                return;
             }
-        );
-    } catch (err) {
-        throw new Error('Error building Docker image:', err.message);
-    }
+
+            // Print build process
+            stream.on('data', chunk => {
+                process.stdout.write(JSON.parse(chunk)?.stream ?? '');
+            });
+
+            stream.on('end', () => {
+                console.log('Docker image build complete.');
+            });
+        }
+    );
 }
 
 export { buildDockerImage };
