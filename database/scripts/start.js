@@ -6,11 +6,11 @@ const docker = new Docker();
 async function startDockerContainer(containerName) {
     // Check if the container with the given name exists
     const containers = await docker.listContainers({ all: true });
-    const existingContainer =
-        containerName &&
-        containers.find(containerInfo => {
-            return containerInfo.Names.includes('/' + containerName);
-        });
+    const existingContainer = containerName
+        ? containers.find(containerInfo => {
+              return containerInfo.Names.includes('/' + containerName);
+          })
+        : undefined;
 
     let container;
 
