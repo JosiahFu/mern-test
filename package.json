@@ -16,8 +16,5 @@
     "client",
     "database"
   ],
-  "type": "module",
-  "devDependencies": {
-    "shx": "^0.3.4"
-  }
+  "type": "module"
 }
