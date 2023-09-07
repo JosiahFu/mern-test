@@ -1,7 +1,13 @@
 import express, { Request } from 'express';
+import { MongoClient } from 'mongodb';
 
-function runServer() {
-    let count = 0;
+const mongo = new MongoClient('mongodb://localhost:27107');
+
+async function runServer() {
+    await mongo.connect();
+    console.log('Connected to MongoDB server');
+    const db = mongo.db();
+    const collection = db.collection<{ value: number }>('documents');
 
     const app = express();
 
@@ -9,10 +15,14 @@ function runServer() {
 
     app.use(express.static('client/dist'));
 
-    app.post<number>('/api/count', (req: Request<{}, {}, { value: number }>, res) => {
-        count = req.body.value;
-        console.log(` count is now ${count}`);
+    app.post<{}, {}, { value: number }>('/api/count', async (req, res) => {
+        await collection.insertOne({ value: req.body.value });
+        console.log(`Recieved count entry for ${req.body.value}`);
         res.end('Data recieved successfully');
+    });
+
+    app.get('/api/count', async (req, res) => {
+        res.end(JSON.stringify(await collection.find({}).toArray()));
     });
 
     app.listen(3000, () => {
