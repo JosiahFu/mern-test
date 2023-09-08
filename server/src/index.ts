@@ -26,8 +26,10 @@ app.get('/api/count', async (req, res) => {
     res.end(JSON.stringify(await collection.find({}).toArray()));
 });
 
-const server = app.listen(3000, () => {
-    console.log('Started Express server');
+const port = 3000;
+
+const server = app.listen(port, () => {
+    console.log(`Started Express server on http://localhost:${port}`);
 });
 
 const onExit = async () => {
