@@ -1,5 +1,5 @@
 import Docker from 'dockerode';
 
-export async function buildDockerImage(): void;
-export async function startDockerContainer(containerName?: string): Promise<Docker.Container>;
-export async function stopDockerContainer(container: Docker.Container): void;
+export function buildDockerImage(): Promise<void>;
+export function startDockerContainer(containerName?: string): Promise<Docker.Container>;
+export function stopDockerContainer(container: Docker.Container): Promise<void>;

@@ -1,4 +1,4 @@
-import express, { Request } from 'express';
+import express from 'express';
 import { startDockerContainer, stopDockerContainer } from 'database';
 import { MongoClient } from 'mongodb';
 import { setupRoutes } from './routes.js';
@@ -15,7 +15,6 @@ const db = mongo.db();
 
 // Setup App
 const app = express();
-
 setupRoutes(app, db);
 
 // Run server
@@ -27,11 +26,15 @@ const server = app.listen(port, () => {
 // Handle exit
 const onExit = async () => {
     console.log('\nReceived kill signal, shutting down gracefully...');
+
     server.close();
     console.log('Stopped Express server');
+
     mongo.close();
     console.log('Closed MongoDB connection')
+
     await stopDockerContainer(container);
+
     console.log('Backend stopped');
     process.exit(0);
 };
