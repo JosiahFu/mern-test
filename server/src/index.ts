@@ -1,37 +1,30 @@
 import express, { Request } from 'express';
 import { startDockerContainer, stopDockerContainer } from 'database';
 import { MongoClient } from 'mongodb';
+import { setupRoutes } from './routes.js';
 
+// Setup Container
 const containerName: string | undefined = process.argv[2];
 const container = await startDockerContainer(containerName);
 
+// Setup MongoDB connection
 const mongo = new MongoClient('mongodb://localhost:27107');
 await mongo.connect();
 console.log('Connected to MongoDB server');
 const db = mongo.db();
-const collection = db.collection<{ value: number }>('documents');
 
+// Setup App
 const app = express();
 
-app.use(express.json());
-app.use(express.static('client/dist'));
+setupRoutes(app, db);
 
-app.post<{}, {}, { value: number }>('/api/count', async (req, res) => {
-    await collection.insertOne({ value: req.body.value });
-    console.log(`Recieved count entry for ${req.body.value}`);
-    res.end('Data recieved successfully');
-});
-
-app.get('/api/count', async (req, res) => {
-    res.end(JSON.stringify(await collection.find({}).toArray()));
-});
-
+// Run server
 const port = 3000;
-
 const server = app.listen(port, () => {
     console.log(`Started Express server on http://localhost:${port}`);
 });
 
+// Handle exit
 const onExit = async () => {
     console.log('\nReceived kill signal, shutting down gracefully...');
     server.close();

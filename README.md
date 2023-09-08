@@ -30,7 +30,7 @@ npm run start
 To specify a container name:
 
 ```bash
-npm run start -- [DATABASE NAME]
+npm run start -- [CONTAINER NAME]
 ```
 
 The server should be ready at [localhost:3000](http://localhost:3000)
