@@ -1,17 +1,15 @@
 import express from 'express';
 import { startDockerContainer, stopDockerContainer } from 'database';
-import { MongoClient } from 'mongodb';
 import { setupRoutes } from './routes.js';
+import { setupDatabase } from './database.js';
 
 // Setup Container
 const containerName: string | undefined = process.argv[2];
 const container = await startDockerContainer(containerName);
 
 // Setup MongoDB connection
-const mongo = new MongoClient('mongodb://localhost:27107');
-await mongo.connect();
+const db = await setupDatabase();
 console.log('Connected to MongoDB server');
-const db = mongo.db();
 
 // Setup App
 const app = express();
@@ -30,7 +28,7 @@ const onExit = async () => {
     server.close();
     console.log('Stopped Express server');
 
-    mongo.close();
+    db.close();
     console.log('Closed MongoDB connection')
 
     await stopDockerContainer(container);
